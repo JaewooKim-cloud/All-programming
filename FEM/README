@@ -1,0 +1,4 @@
+For compiling and running the codes
+1. cmkae CMakeLists.txt
+2. make
+3.make run
