@@ -1,46 +1,31 @@
-//#include <stdio.h>
-//#include <stdlib.h>
-//#include <mpi.h>
-
 #include <iostream>
 #include <array>
 #include <cmath>
 #include <mpi.h>
 #include <ctime>
 
-
-//int* genericScan(int *X, int n, int procno, int p);
 void genericScan(float *a, const long long n)
-{
-
-	
-	
+{	
   MPI_Status status;
-  
-  
+	
   int nprocs,procno,d;
-
 
   MPI_Comm_size(MPI_COMM_WORLD,&nprocs); // nprocs : the number of threads
   MPI_Comm_rank(MPI_COMM_WORLD,&procno); // procno : The current id of the thread 
   int p = nprocs; // The number of threads/processes.
   d = int(log2(n));
-  //std::cout<<"error pass" << "\n";
   float **b, **c;
   b = new float * [d+1];
   c = new float * [d+1];
   
   for ( int i = 0; i < d+1; i++ ) {
-		//std::cout<< "error pass"<<"\n"; 	  
-		b[i] = new float[n];
+	  	b[i] = new float[n];
 		c[i] = new float[n];
-	}
-//std::cout << "error pass"<<"\n";	
+	}	
   /*
    My code starts here. 
    */
- //std::cout<<"error pass"<<"\n";
-  // up-sweep phase
+   // up-sweep phase
   for (long long i=(n/p)*procno; i<(n/p)*(procno+1);i++) {
 	  b[0][i]=a[i];
   }
@@ -51,19 +36,13 @@ void genericScan(float *a, const long long n)
 			MPI_Gather ( &b[0][procno*n/(p)] , n/(p) , MPI_FLOAT , b[0] , n/(p) , MPI_FLOAT , 0 ,MPI_COMM_WORLD );
 		}
 		MPI_Bcast(&b[0][0], n, MPI_FLOAT, 0, MPI_COMM_WORLD);
-		
-
-		std::cout<<"error pass"<<"\n";
-  		// if (procno==0)	std::cout<< b[0][30] << "\n";
-		//	MPI_Bcast(&b[0][0], n, MPI_INT, 0, MPI_COMM_WORLD);
-			 //if (procno==0)	std::cout<< b[0][30] << "\n";
-  for (int h=1;h<=d;h++) {
+	for (int h=1;h<=d;h++) {
 	  
 	  if (n<long(pow(2,h))*p) {
 		for (long long i=0;i<(n/int(pow(2,h)));i++) {
 	  
 			b[h][i] = b[h-1][2*i] + b[h-1][2*i+1];
-			//  std::cout<< "error pass" << "\n"; 
+			 
 				}
 				
 			
@@ -72,11 +51,9 @@ void genericScan(float *a, const long long n)
 		} else {
 	for (long long i=(n/int(pow(2,h))/p)*procno;i<(n/int(pow(2,h))/p)*(procno+1);i++) {
 	  
-	  b[h][i] = b[h-1][2*i] + b[h-1][2*i+1];
-	//  std::cout<< "error pass" << "\n"; 
+	  b[h][i] = b[h-1][2*i] + b[h-1][2*i+1]; 
 	  
 	}    
-	//std::cout<< "error pass" << "\n"; 
 			if(procno==0) {
 	  		MPI_Gather ( MPI_IN_PLACE , n/int(pow(2,h))/p , MPI_FLOAT , b[h] , n/(pow(2,h))/p , MPI_FLOAT , 0 ,MPI_COMM_WORLD );
 			}
@@ -134,23 +111,10 @@ void genericScan(float *a, const long long n)
 		MPI_Gather ( & a[(n/p)*procno] , (n/p) , MPI_FLOAT , a , (n/p) , MPI_FLOAT , 0 ,MPI_COMM_WORLD );
 		}
 	
-		
-		
-		
  // The end of the parallel scan code.
- 
- 
-  
- 
 }
 
-
-
-
 int main( int argc, char **argv){	
-	
-	
-
 
   MPI_Init(0,0);
   MPI_Comm comm = MPI_COMM_WORLD;
@@ -186,11 +150,7 @@ int main( int argc, char **argv){
 
 	
 	// print input
-	std::cout << "The initialization has been complete." <<"\n";
-	//for(int i=0;i<n;i++) std::cout<< x[i] <<" ";
-	//	std::cout<<"\n";
-	
-	 
+	std::cout << "The initialization has been complete." <<"\n";	 
 
 	// scan
 	MPI_Barrier( MPI_COMM_WORLD );
@@ -199,8 +159,6 @@ start = std::clock(); // get current time
     duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
 	MPI_Barrier( MPI_COMM_WORLD );
     std::cout << "Operation took "<< duration << "seconds" << std::endl;
-
-	
 
 	//print output
 	
